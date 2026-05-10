@@ -41,7 +41,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework', #Put this after you install Django Rest Framework
     'corsheaders', #Put this after you install Django Cors-headers
-    'accounts'
+    'accounts',
+    'customers',
 ]
 
 MIDDLEWARE = [
