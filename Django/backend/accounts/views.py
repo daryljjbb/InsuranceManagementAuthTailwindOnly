@@ -16,8 +16,18 @@ class ProfileView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
+
+        user = request.user
+
+        # SUPERUSER OVERRIDE
+        if user.is_superuser:
+            role = "admin"
+
+        else:
+            role = user.role
+
         return Response({
-            "username": request.user.username,
-            "email": request.user.email,
-            "role": request.user.role,
+            "username": user.username,
+            "email": user.email,
+            "role": role,
         })

@@ -1,197 +1,303 @@
+import { useState } from "react";
+
 import DashboardLayout from "../../layouts/DashboardLayout";
 
 import Card from "../../components/ui/Card";
-
-import Table from "../../components/ui/Table";
-
-import Loader from "../../components/ui/Loader";
-
 import Button from "../../components/ui/Button";
 import Modal from "../../components/ui/Modal";
-
-import { useState } from "react";
+import DataTable from "../../components/ui/DataTable";
 
 import CustomerForm from "../../components/forms/CustomerForm";
 
 import useCustomers from "../../hooks/useCustomers";
 
-import SearchInput from "../../components/ui/SearchInput";
+import CustomerStatsRow from "../../components/customers/stats/CustomerStatsRow";
 
-import EmptyState from "../../components/ui/EmptyState";
+import { Link } from "react-router-dom";
 
 const Customers = () => {
 
+  // CUSTOMERS HOOK
   const {
-  customers,
-  loading,
-  createCustomer,
-  deleteCustomer,
-  updateCustomer,
-  search,
-  handleSearch,
-} = useCustomers();
+    customers,
+    loading,
+    createCustomer,
+    deleteCustomer,
+    updateCustomer,
 
-  const columns = [
-  {
-    key: "first_name",
-    title: "First Name",
-  },
+    // SEARCH + PAGINATION
+    search,
+    handleSearch,
 
-  {
-    key: "last_name",
-    title: "Last Name",
-  },
+    currentPage,
+    nextPage,
+    previousPage,
 
-  {
-    key: "email",
-    title: "Email",
-  },
+    fetchCustomers,
+  } = useCustomers();
 
-  {
-    key: "phone_number",
-    title: "Phone",
-  },
+  // EDIT MODAL STATE
+  const [selectedCustomer, setSelectedCustomer] =
+    useState(null);
 
-  // ACTION COLUMN
-  {
-    key: "actions",
-    title: "Actions",
+  const [isEditOpen, setIsEditOpen] =
+    useState(false);
 
-    render: (customer) => (
-      <div className="flex gap-2">
+const [isCreateOpen,
+  setIsCreateOpen] =
+    useState(false);
 
-        {/* EDIT BUTTON */}
-        <Button
-          variant="warning"
-          onClick={() => handleEdit(customer)}
-        >
-          Edit
-        </Button>
-
-        {/* DELETE BUTTON */}
-        <Button
-          variant="danger"
-          onClick={() =>
-            deleteCustomer(customer.id)
-          }
-        >
-          Delete
-        </Button>
-
-      </div>
-    ),
-  },
-];
-
-
-const [selectedCustomer, setSelectedCustomer] =
-  useState(null);
-
-const [isEditOpen, setIsEditOpen] =
-  useState(false);
-
+  // OPEN EDIT MODAL
   const handleEdit = (customer) => {
 
-  setSelectedCustomer(customer);
+    setSelectedCustomer(customer);
 
-  setIsEditOpen(true);
+    setIsEditOpen(true);
+  };
+
+  
+// CLOSE ALL MODALS
+const closeModal = () => {
+
+  setSelectedCustomer(null);
+
+  setIsEditOpen(false);
+
+  setIsCreateOpen(false);
 };
 
 
+  // UPDATE CUSTOMER
+  const handleUpdateCustomer = (data) => {
+
+    if (!selectedCustomer) return;
+
+    updateCustomer(
+      selectedCustomer.id,
+      data
+    );
+
+    closeModal();
+  };
+
+  // TABLE COLUMNS
+  const columns = [
+
+    {
+        key: "first_name",
+        title: "First Name",
+
+        render: (customer) => (
+
+            <Link
+            to={`/customers/${customer.id}`}
+            className="
+                text-blue-600
+                hover:underline
+                font-medium
+            "
+            >
+            {customer.first_name}
+            </Link>
+        ),
+    },
+    {
+      key: "last_name",
+      title: "Last Name",
+    },
+
+    {
+      key: "email",
+      title: "Email",
+    },
+
+    {
+      key: "phone_number",
+      title: "Phone",
+    },
+
+    {
+      key: "actions",
+      title: "Actions",
+
+      render: (customer) => (
+
+        <div className="flex gap-2">
+
+          {/* EDIT BUTTON */}
+          <Button
+            variant="warning"
+            onClick={() =>
+              handleEdit(customer)
+            }
+          >
+            Edit
+          </Button>
+
+          {/* DELETE BUTTON */}
+          <Button
+            variant="danger"
+            onClick={() =>
+              deleteCustomer(customer.id)
+            }
+          >
+            Delete
+          </Button>
+
+        </div>
+      ),
+    },
+  ];
+
   return (
+
     <DashboardLayout>
 
       <div className="space-y-6">
 
-        <Card>
+        {/* CREATE CUSTOMER */}
+        
+        {/* PAGE HEADER */}
+            <Card>
 
-          <h1 className="text-2xl font-bold mb-4">
-            Create Customer
-          </h1>
+            <div className="
+                flex
+                flex-col
+                lg:flex-row
+                lg:justify-between
+                lg:items-center
+                gap-4
+            ">
 
-          <CustomerForm
-            onSubmit={createCustomer}
-          />
+                {/* LEFT */}
+                <div>
 
-        </Card>
+                <h1 className="
+                    text-3xl
+                    font-bold
+                ">
+                    Customers
+                </h1>
 
-        <Card>
+                <p className="
+                    text-gray-500
+                    mt-1
+                ">
+                    Manage customer accounts,
+                    policies, claims, and billing.
+                </p>
 
-          <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4 mb-4">
+                </div>
 
-            <h1 className="text-2xl font-bold">
-              Customers
-            </h1>
-            <SearchInput
-            value={search}
-            onChange={(e) =>
-                handleSearch(e.target.value)
-            }
-            placeholder="Search customers..."
-            />
-            <Button>
-              Export
-            </Button>
+                {/* RIGHT */}
+                <div className="
+                flex
+                gap-3
+                ">
 
-          </div>
-
-          {loading ? (
-
-            <Loader />
-
-          ) : (
-
-            <div className="space-y-4">
-
-             {
-                customers.length > 0 ? (
-
-                    <Table
-                    columns={columns}
-                    data={customers}
-                    />
-
-                ) : (
-
-                    <EmptyState
-                    title="No Customers Found"
-                    message="Try adjusting your search."
-                    />
-
-                )
-                }
-
-              <Modal
-                isOpen={isEditOpen}
-                onClose={() =>
-                    setIsEditOpen(false)
-                }
-                title="Edit Customer"
-                >
-
-                <CustomerForm
-                    defaultValues={
-                    selectedCustomer
+                <Button
+                    onClick={() =>
+                    setIsCreateOpen(true)
                     }
+                >
+                    Add Customer
+                </Button>
 
-                    onSubmit={(data) => {
+                <Button variant="secondary">
+                    Export
+                </Button>
 
-                    updateCustomer(
-                        selectedCustomer.id,
-                        data
-                    );
-
-                    setIsEditOpen(false);
-                    }}
-                />
-
-            </Modal>
+                </div>
 
             </div>
 
-          )}
+            </Card>
 
-        </Card>
+        <CustomerStatsRow
+        customers={customers}
+        />
+
+        {/* CUSTOMERS DATATABLE */}
+        <DataTable
+          title="Customers"
+
+          columns={columns}
+
+          data={customers}
+
+          loading={loading}
+
+          // SEARCH
+          search={search}
+
+          onSearch={handleSearch}
+
+          // PAGINATION
+          currentPage={currentPage}
+
+          nextPage={nextPage}
+
+          previousPage={previousPage}
+
+          onPageChange={(page) =>
+            fetchCustomers(search, page)
+          }
+
+          // HEADER ACTIONS
+          actions={
+            <div className="flex gap-2">
+
+                <Button
+                    onClick={() =>
+                    setIsCreateOpen(true)
+                    }
+                >
+                    Add Customer
+                </Button>
+
+                <Button>
+                    Export
+                </Button>
+
+            </div>
+          }
+        />
+
+        {/* EDIT MODAL */}
+        <Modal
+          isOpen={isEditOpen}
+          onClose={closeModal}
+          title="Edit Customer"
+        >
+
+          <CustomerForm
+            defaultValues={
+              selectedCustomer || {}
+            }
+
+            onSubmit={
+              handleUpdateCustomer
+            }
+          />
+
+        </Modal>
+
+        <Modal
+        isOpen={isCreateOpen}
+        onClose={closeModal}
+        title="Create Customer"
+        >
+
+        <CustomerForm
+            onSubmit={(data) => {
+
+            createCustomer(data);
+
+            closeModal();
+            }}
+        />
+
+        </Modal>
 
       </div>
 

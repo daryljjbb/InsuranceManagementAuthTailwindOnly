@@ -1,10 +1,13 @@
 const customerApi = (api) => ({
 
-  getCustomers: (search = "") =>
-  api.get(
-    `customers/?search=${search}`
-  ),
-  
+  getCustomers: (
+    search = "",
+    page = 1
+    ) =>
+    api.get(
+        `customers/?search=${search}&page=${page}`
+    ),
+
   createCustomer: (data) =>
     api.post("customers/", data),
 

@@ -34,9 +34,15 @@ export const AuthProvider = ({ children }) => {
       );
 
       // Store simple user info
-      setUser({
-        username,
-      });
+     const profileResponse =
+        await api.get("auth/profile/", {
+            headers: {
+            Authorization:
+                `Bearer ${response.data.access}`,
+            },
+        });
+
+        setUser(profileResponse.data);
 
       return {
         success: true,

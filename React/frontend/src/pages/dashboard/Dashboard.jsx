@@ -1,42 +1,173 @@
 import DashboardLayout from "../../layouts/DashboardLayout";
-import Card from "../../components/ui/Card";
+
+import MetricCard
+from "../../components/dashboard/MetricCard";
+
+import RevenueChart
+from "../../components/dashboard/RevenueChart";
+
+import ClaimsChart
+from "../../components/dashboard/ClaimsChart";
+
+import InvoicePieChart
+from "../../components/dashboard/InvoicePieChart";
+
+import ActivityTimeline
+from "../../components/dashboard/ActivityTimeline";
+
+import Loader
+from "../../components/ui/Loader";
+
+import useDashboard from "../../hooks/useDashboard";
+
+import {
+
+  Users,
+
+  ShieldCheck,
+
+  FileWarning,
+
+  DollarSign,
+
+} from "lucide-react";
 
 const Dashboard = () => {
 
+  const {
+
+    metrics,
+
+    revenueData,
+
+    claimsData,
+
+    invoiceData,
+
+    logs,
+
+    loading,
+
+  } = useDashboard();
+
+  if (loading) {
+
+    return (
+
+      <DashboardLayout>
+
+        <Loader />
+
+      </DashboardLayout>
+    );
+  }
+
   return (
+
     <DashboardLayout>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="space-y-8">
 
-        <Card>
-        <h2 className="text-xl font-bold">
-          Customers
-        </h2>
+        {/* HEADER */}
+        <div>
 
-        <p className="text-3xl font-bold">
-          120
-        </p>
-      </Card>
+          <h1
+            className="
+              text-4xl
+              font-bold
+            "
+          >
+            Insurance Dashboard
+          </h1>
 
-        <Card>
-          <h2 className="text-xl font-bold">
-            Policies
-          </h2>
+          <p className="text-gray-500">
 
-          <p className="text-3xl font-bold">
-            10
+            Business overview
+            and analytics
+
           </p>
-        </Card>
 
-        <Card>
-          <h2 className="text-xl font-bold">
-            Claims
-          </h2>
+        </div>
 
-          <p className="text-3xl font-bold">
-            5
-          </p>
-        </Card>
+        {/* KPI CARDS */}
+        <div
+          className="
+            grid
+            grid-cols-1
+            md:grid-cols-2
+            xl:grid-cols-4
+            gap-6
+          "
+        >
+
+          <MetricCard
+            title="Customers"
+            value={
+              metrics?.customers || 0
+            }
+            icon={<Users />}
+            color="bg-blue-500"
+          />
+
+          <MetricCard
+            title="Policies"
+            value={
+              metrics?.policies || 0
+            }
+            icon={<ShieldCheck />}
+            color="bg-green-500"
+          />
+
+          <MetricCard
+            title="Claims"
+            value={
+              metrics?.claims || 0
+            }
+            icon={<FileWarning />}
+            color="bg-yellow-500"
+          />
+
+          <MetricCard
+            title="Revenue"
+            value={
+              metrics?.revenue || 0
+            }
+            icon={<DollarSign />}
+            color="bg-purple-500"
+          />
+
+        </div>
+
+        {/* REVENUE */}
+        <RevenueChart
+          data={revenueData}
+        />
+
+        {/* ANALYTICS */}
+        <div
+          className="
+            grid
+            grid-cols-1
+            xl:grid-cols-2
+            gap-6
+          "
+        >
+
+          <ClaimsChart
+            data={claimsData}
+          />
+
+          <InvoicePieChart
+            data={invoiceData}
+          />
+
+        </div>
+
+        {/* TIMELINE */}
+        <ActivityTimeline
+          logs={logs}
+        />
+
       </div>
 
     </DashboardLayout>

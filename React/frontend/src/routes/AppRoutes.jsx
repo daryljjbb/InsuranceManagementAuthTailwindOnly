@@ -10,6 +10,7 @@ import Register from "../pages/auth/Register";
 
 import Dashboard from "../pages/dashboard/Dashboard";
 import Customers from "../pages/customers/Customers";
+import CustomerDetail from "../pages/customers/CustomerDetail";
 import Policies from "../pages/policies/Policies";
 import Claims from "../pages/claims/Claims";
 import Payments from "../pages/payments/Payments";
@@ -52,6 +53,11 @@ const AppRoutes = () => {
               <Customers />
             </ProtectedRoute>
           }
+        />
+
+        <Route
+        path="/customers/:id"
+        element={<CustomerDetail />}
         />
 
         <Route

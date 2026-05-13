@@ -24,9 +24,23 @@ const useCustomers = () => {
    const [search, setSearch] =
   useState("");
 
+
+  const [count, setCount] =
+  useState(0);
+
+const [nextPage, setNextPage] =
+  useState(null);
+
+const [previousPage, setPreviousPage] =
+  useState(null);
+
+const [currentPage, setCurrentPage] =
+  useState(1);
+
   // FETCH CUSTOMERS
   const fetchCustomers = async (
-    searchTerm = ""
+    searchTerm = "",
+    page = 1
     ) => {
 
     try {
@@ -35,10 +49,21 @@ const useCustomers = () => {
 
       const response =
         await customerService.getCustomers(
-            searchTerm
+            searchTerm,
+            page
         );
 
-      setCustomers(response.data);
+      setCustomers(response.data.results);
+
+      setCount(response.data.count);
+
+      setNextPage(response.data.next);
+
+      setPreviousPage(
+        response.data.previous
+        );
+
+      setCurrentPage(page);
 
     } catch (error) {
 
@@ -156,6 +181,10 @@ const useCustomers = () => {
     deleteCustomer,
     updateCustomer,
     refreshCustomers:
+    count,
+    nextPage,
+    previousPage,
+    currentPage,
     fetchCustomers,
     search,
     handleSearch,

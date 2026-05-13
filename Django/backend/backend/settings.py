@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 
 from pathlib import Path
 from datetime import timedelta
+import os
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -42,7 +43,13 @@ INSTALLED_APPS = [
     'rest_framework', #Put this after you install Django Rest Framework
     'corsheaders', #Put this after you install Django Cors-headers
     'accounts',
+    'auditlogs',
+    'claims',
     'customers',
+    'dashboard',
+    'invoices',
+    'payments',
+    'policies',
 ]
 
 MIDDLEWARE = [
@@ -142,9 +149,24 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ),
+    # PAGINATION
+    'DEFAULT_PAGINATION_CLASS':
+        'rest_framework.pagination.PageNumberPagination',
+
+    'PAGE_SIZE': 5,
+    
 }
 
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
 }
+
+MEDIA_URL = '/media/'
+
+MEDIA_ROOT = os.path.join(
+    BASE_DIR,
+    'media'
+)
+
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'

@@ -1,31 +1,45 @@
 import { Link, useLocation } from "react-router-dom";
+import usePermissions from "../../hooks/usePermissions";
 
 const Sidebar = () => {
 
   const location = useLocation();
 
+  const {
+  isAdmin,
+  isAgent,
+} = usePermissions();
+
   const navItems = [
-    {
-      name: "Dashboard",
-      path: "/dashboard",
-    },
-    {
-      name: "Customers",
-      path: "/customers",
-    },
-    {
-      name: "Policies",
-      path: "/policies",
-    },
-    {
-      name: "Claims",
-      path: "/claims",
-    },
-    {
-      name: "Payments",
-      path: "/payments",
-    },
-  ];
+
+  {
+    name: "Dashboard",
+    path: "/dashboard",
+  },
+
+  ...(isAdmin || isAgent
+    ? [
+        {
+          name: "Customers",
+          path: "/customers",
+        },
+
+        {
+          name: "Policies",
+          path: "/policies",
+        },
+      ]
+    : []),
+
+  ...(isAdmin
+    ? [
+        {
+          name: "Payments",
+          path: "/payments",
+        },
+      ]
+    : []),
+];
 
   return (
     <div className="w-64 bg-slate-900 text-white min-h-screen p-5">
