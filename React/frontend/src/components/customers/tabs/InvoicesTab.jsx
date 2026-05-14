@@ -393,22 +393,25 @@ const InvoicesTab = ({
                           {/* PAYMENT ACTION */}
                           <div>
 
-                            <Button
-                              variant="success"
+                            {outstanding > 0 && (
 
-                              onClick={() => {
+                            <Button
+                                variant="success"
+                                onClick={() => {
 
                                 setSelectedInvoice(
-                                  invoice
+                                    invoice
                                 );
 
                                 setIsPaymentModalOpen(
-                                  true
+                                    true
                                 );
-                              }}
+                                }}
                             >
-                              Add Payment
+                                Add Payment
                             </Button>
+
+                            )}
 
                           </div>
 
