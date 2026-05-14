@@ -1,3 +1,7 @@
+from decimal import Decimal
+
+from django.db.models import Sum
+
 from rest_framework import serializers
 
 from .models import Payment
@@ -29,3 +33,36 @@ class PaymentSerializer(
         model = Payment
 
         fields = "__all__"
+
+    def validate(self, data):
+
+        invoice = data["invoice"]
+
+        payment_amount = Decimal(
+            data["amount"]
+        )
+
+        total_paid = (
+
+            invoice.payments.aggregate(
+                total=Sum("amount")
+            )["total"] or 0
+        )
+
+        remaining_balance = (
+            invoice.amount - total_paid
+        )
+
+        # BLOCK OVERPAYMENT
+        if payment_amount > remaining_balance:
+
+            raise serializers.ValidationError(
+
+                {
+                    "amount":
+
+                    f"Payment exceeds remaining balance of ${remaining_balance}."
+                }
+            )
+
+        return data

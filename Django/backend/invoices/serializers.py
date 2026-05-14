@@ -2,6 +2,8 @@ from rest_framework import serializers
 
 from .models import Invoice
 
+from payments.serializers import PaymentSerializer
+
 
 class InvoiceSerializer(
     serializers.ModelSerializer
@@ -18,6 +20,11 @@ class InvoiceSerializer(
             "policy.policy_number",
             read_only=True
         )
+    
+    payments = PaymentSerializer(
+    many=True,
+    read_only=True
+)
 
     class Meta:
 

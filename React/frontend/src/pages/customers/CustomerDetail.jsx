@@ -338,7 +338,10 @@ const CustomerDetail = () => {
         )}
 
         {activeTab === "invoices" && (
-          <InvoicesTab customer={customer} />
+          <InvoicesTab
+            customer={customer}
+            refreshCustomer={fetchCustomer}
+            />
         )}
 
       </div>

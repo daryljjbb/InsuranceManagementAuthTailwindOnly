@@ -4,6 +4,8 @@ from invoices.models import Invoice
 
 from claims.models import Claim
 
+from django.db.models import Sum
+
 
 class Payment(models.Model):
 
@@ -44,6 +46,34 @@ class Payment(models.Model):
     created_at = models.DateTimeField(
         auto_now_add=True
     )
+
+    def save(self, *args, **kwargs):
+
+        # SAVE PAYMENT FIRST
+        super().save(*args, **kwargs)
+
+        # CALCULATE TOTAL PAID
+        total_paid = (
+
+            self.invoice.payments.aggregate(
+                total=Sum("amount")
+            )["total"] or 0
+        )
+
+        # UPDATE INVOICE STATUS
+        if total_paid >= self.invoice.amount:
+
+            self.invoice.status = "paid"
+
+        elif total_paid > 0:
+
+            self.invoice.status = "partial"
+
+        else:
+
+            self.invoice.status = "pending"
+
+        self.invoice.save()
 
     def __str__(self):
 
